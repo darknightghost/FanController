@@ -38,3 +38,8 @@ FanController/PCB/FanController_backup/*
 # CMake
 Firmware/.build/*
 Firmware/bin/*
+
+# Editor
+tags
+.directory
+*.swp
