@@ -13,3 +13,23 @@
 */
 
 #pragma once
+
+#include <common/common.h>
+#include <common/stc8g.h>
+
+/**
+ * @brief       Initialize clock.
+ */
+void clock_init();
+
+/**
+ * @brief       Get system boot time in milliseconds.
+ *
+ * @return      Boot time.
+ */
+uint32_t clock_get_milliseconds();
+
+/**
+ * @brief       Timer 0 interrupt handler.
+ */
+extern void __on_timer0(void) __interrupt INT_TIMER0;

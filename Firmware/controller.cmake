@@ -8,9 +8,9 @@ add_executable ("${TARGET_NAME}"
     )
 
 set (DATA_SIZE              128)
-set (IDATA_SIZE             128)
-set (XDATA_SIZE             1024)
-set (CODE_SIZE              17408)
+set (IDATA_SIZE             256)
+set (XDATA_SIZE             4096)
+set (CODE_SIZE              65536)
 
 target_compile_options (${TARGET_NAME}  PRIVATE
     "--iram-size"   "${IDATA_SIZE}"

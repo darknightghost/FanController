@@ -8,7 +8,7 @@ add_executable ("${TARGET_NAME}"
     )
 
 set (DATA_SIZE              128)
-set (IDATA_SIZE             128)
+set (IDATA_SIZE             256)
 set (XDATA_SIZE             1024)
 set (CODE_SIZE              17408)
 
