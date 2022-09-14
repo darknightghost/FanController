@@ -14,9 +14,22 @@
 
 #include <common/common.h>
 
+#include <power/boot_mode.h>
+#include <power/clock.h>
+#include <power/led.h>
+
 int main()
 {
+    // Initialize.
+    led_init();
+    clock_init();
+    boot_mode_init();
+
+    // Main loop.
     while (true) {
     }
+
+    // Reboot.
+    IAP_CONTR = 0x60;
     return 0;
 }

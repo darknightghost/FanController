@@ -32,4 +32,4 @@ uint32_t clock_get_milliseconds();
 /**
  * @brief       Timer 0 interrupt handler.
  */
-extern void __on_timer0(void) __interrupt INT_TIMER0;
+extern void __on_clock_timer(void) __interrupt INT_TIMER0;

@@ -22,12 +22,14 @@
     #define INT_INT1
     #define INT_TIMER1
     #define INT_UART1
+    #define INT_INT2
 
 #else
     #define INT_TIMER0 1
     #define INT_INT1   2
     #define INT_TIMER1 3
     #define INT_UART1  4
+    #define INT_INT2   10
 
 #endif
 
