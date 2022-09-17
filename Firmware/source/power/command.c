@@ -13,21 +13,30 @@
 */
 
 #include <common/stc8g.h>
+#include <power/boot_mode.h>
+#include <power/clock.h>
 #include <power/command.h>
 #include <power/led.h>
+#include <power/power.h>
+
+#define POWER_MCU_MS    100
+#define POWER_UART_MS   100
+#define POWER_REBOOT_MS 500
+
+#define REBOOT_FACTORY_MS 50
 
 #define PORT_READY         P3_2
 #define PORT_FAN_POWER     P3_3
 #define PORT_REBOOT_SIGNAL P3_6
 
 typedef enum _run_status {
-    RUN_STATUS_READY,
-    RUN_STATUS_POWER_ON,
-    RUN_STATUS_BOOTING,
-    RUN_STATUS_BOOTING_FACTORY,
-    RUN_STATUS_REBOOT_SIGNAL,
-    RUN_STATUS_REBOOTING,
-    RUN_STATUS_REBOOTING_FACTORY,
+    RUN_STATUS_READY,             /// All units ready.
+    RUN_STATUS_POWER_ON,          ///< System power on.
+    RUN_STATUS_BOOTING,           ///< Normal mode booting.
+    RUN_STATUS_BOOTING_FACTORY,   ///< Factory mode booting.
+    RUN_STATUS_REBOOT_SIGNAL,     ///< Parse reboot signal.
+    RUN_STATUS_REBOOTING,         ///< Rebooting to normal mode.
+    RUN_STATUS_REBOOTING_FACTORY, ///< Rebooting to factory mode.
 } run_status_t;
 
 static __data volatile run_status_t l_run_status;
@@ -37,6 +46,8 @@ static __data volatile run_status_t l_run_status;
  */
 void command_init()
 {
+    power_off(PWR_CTRL_ALL);
+
     // PORT_READY
     clear_bit(P3M0, 2);
     clear_bit(P3M1, 2);
@@ -60,61 +71,111 @@ void command_init()
     EA = 1;
 }
 
-static inline void enable_reboot_int()
-{
-    set_bit(INTCLKO, 4);
-}
-
-static inline void disable_reboot_int()
-{
-    clear_bit(INTCLKO, 4);
-}
-
-static inline void enable_fan_power_int()
-{
-    EX1 = 1;
-}
-
-static inline void disable_fan_power_int()
-{
-    EX1 = 0;
-}
-
-static inline void enable_ready_int()
-{
-    EX0 = 1;
-}
-
-static inline void disable_ready_int()
-{
-    EX0 = 0;
-}
-
 static inline void on_status_ready()
 {
-    EA = 0;
     led_set_status_led_color(STATUS_LED_GREEN);
-    disable_ready_int();
-    enable_reboot_int();
-    enable_fan_power_int();
-    EA = 1;
+    power_on(PWR_CTRL_READY);
+
     while (l_run_status == RUN_STATUS_READY) {
-        // Sleep.
-        set_bit(PCON, 1);
+        // Check fan status.
+        if (PORT_FAN_POWER == 0) {
+            power_on(PWR_CTRL_FAN);
+        } else {
+            power_off(PWR_CTRL_FAN);
+        }
+
+        // Check reboot signal.
+        if (PORT_REBOOT_SIGNAL == 0) {
+            l_run_status = RUN_STATUS_REBOOT_SIGNAL;
+        }
     }
 }
 
-static inline void on_status_power_on() {}
+static inline void on_status_power_on()
+{
+    led_set_status_led_color(STATUS_LED_RED);
 
-static inline void on_status_booting() {}
+    // Check boot mode.
+    boot_mode_t boot_mode = boot_mode_get_next();
+    if (boot_mode == BOOT_MODE_NORMAL) {
+        l_run_status = RUN_STATUS_BOOTING;
 
-static inline void on_status_booting_factory() {}
+    } else {
+        l_run_status = RUN_STATUS_BOOTING_FACTORY;
+    }
+}
 
-static inline void on_status_reboot_signal() {}
+static inline void on_status_booting()
+{
+    led_set_status_led_color(STATUS_LED_YELLOW);
 
-static inline void on_status_rebooting() {}
+    // Power on MCU.
+    power_on(PWR_CTRL_MCU);
+    clock_wait(POWER_MCU_MS);
 
-static inline void on_status_rebooting_factory() {}
+    // Wait for ready.
+    while (PORT_READY != 0) {
+    };
+
+    l_run_status = RUN_STATUS_READY;
+}
+
+static inline void on_status_booting_factory()
+{
+    led_set_status_led_color(STATUS_LED_YELLOW);
+
+    // Power on UART.
+    power_on(PWR_CTRL_UART);
+    clock_wait(POWER_UART_MS);
+
+    // Power on MCU.
+    power_on(PWR_CTRL_MCU);
+    clock_wait(POWER_MCU_MS);
+
+    // Wait for ready.
+    while (PORT_READY != 0) {
+    };
+
+    l_run_status = RUN_STATUS_READY;
+}
+
+static inline void on_status_reboot_signal()
+{
+    // Get low-level duration.
+    uint32_t begin_time = clock_get_milliseconds();
+    while (PORT_REBOOT_SIGNAL == 0) {
+    }
+
+    uint32_t duration = clock_get_milliseconds() - begin_time;
+
+    // Select reboot mode.
+    if (duration >= REBOOT_FACTORY_MS) {
+        l_run_status = RUN_STATUS_REBOOTING_FACTORY;
+    } else {
+        l_run_status = RUN_STATUS_REBOOTING;
+    }
+}
+
+static inline void on_status_rebooting()
+{
+    // Power off.
+    power_off(PWR_CTRL_ALL);
+    led_set_status_led_color(STATUS_LED_RED);
+    clock_wait(POWER_REBOOT_MS);
+    l_run_status = RUN_STATUS_POWER_ON;
+}
+
+static inline void on_status_rebooting_factory()
+{
+    // Power off.
+    power_off(PWR_CTRL_ALL);
+    led_set_status_led_color(STATUS_LED_RED);
+    clock_wait(POWER_REBOOT_MS);
+    l_run_status = RUN_STATUS_POWER_ON;
+
+    // Set next boot mode.
+    boot_mode_set_next_factory();
+}
 
 /**
  * @brief       Run main loop.
@@ -122,6 +183,7 @@ static inline void on_status_rebooting_factory() {}
 void command_main_loop()
 {
     while (true) {
+        // Dispatch.
         switch (l_run_status) {
             case RUN_STATUS_READY:
                 on_status_ready();
@@ -153,18 +215,3 @@ void command_main_loop()
         }
     }
 }
-
-/**
- * @brief       INT0 interrupt handler.
- */
-void __on_ready_signal(void) __interrupt INT_INT0 {}
-
-/**
- * @brief       INT1 interrupt handler.
- */
-void __on_fan_power_signal(void) __interrupt INT_INT1 {}
-
-/**
- * @brief       INT2 interrupt handler.
- */
-void __on_reboot_signal(void) __interrupt INT_INT2 {}

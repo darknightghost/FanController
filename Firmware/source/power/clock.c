@@ -52,6 +52,20 @@ uint32_t clock_get_milliseconds()
 }
 
 /**
+ * @brief       Wait.
+ */
+void clock_wait(uint32_t milliseconds)
+{
+    uint32_t begin = clock_get_milliseconds();
+    for (uint32_t current_time = clock_get_milliseconds();
+         current_time - begin < milliseconds;
+         current_time = clock_get_milliseconds()) {
+        // Sleep uilt interrupted.
+        set_bit(PCON, 0);
+    }
+}
+
+/**
  * @brief       Timer 0 interrupt handler.
  */
 void __on_clock_timer(void) __interrupt INT_TIMER0

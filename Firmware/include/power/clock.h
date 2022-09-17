@@ -30,6 +30,13 @@ void clock_init();
 uint32_t clock_get_milliseconds();
 
 /**
+ * @brief       Wait.
+ *
+ * @param[in]   milliseconds        Time to wait(milliseconds);
+ */
+void clock_wait(uint32_t milliseconds);
+
+/**
  * @brief       Timer 0 interrupt handler.
  */
 extern void __on_clock_timer(void) __interrupt INT_TIMER0;
