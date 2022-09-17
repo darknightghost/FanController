@@ -13,3 +13,35 @@
 */
 
 #pragma once
+
+/**
+ * @brief       Power ctrl option.
+ */
+typedef enum _power_ctrl_option {
+    PWR_CTRL_MCU      = 0x01, ///< Controller MCU.
+    PWR_CTRL_SCREEN   = 0x02, ///< Screen.
+    PWR_CTRL_UART     = 0x04, ///< UART.
+    PWR_CTRL_ETHERNET = 0x08, ///< Ethernet.
+    PWR_CTRL_FAN      = 0x10, ///< Fan.
+    PWR_CTRL_ALL      = PWR_CTRL_MCU | PWR_CTRL_SCREEN | PWR_CTRL_UART
+                   | PWR_CTRL_ETHERNET | PWR_CTRL_FAN ///< All.
+} power_ctrl_option_t;
+
+/**
+ * @brief       Initialize power control.
+ */
+void power_init();
+
+/**
+ * @brief       Set power on.
+ *
+ * @param[in]   ctrl        Control options.
+ */
+void power_on(power_ctrl_option_t ctrl);
+
+/**
+ * @brief       Set power off.
+ *
+ * @param[in]   ctrl        Control options.
+ */
+void power_off(power_ctrl_option_t ctrl);

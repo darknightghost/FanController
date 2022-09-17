@@ -13,3 +13,31 @@
 */
 
 #pragma once
+
+#include <common/common.h>
+#include <common/stc8g.h>
+
+/**
+ * @brief       Initialize command.
+ */
+void command_init();
+
+/**
+ * @brief       Run main loop.
+ */
+void command_main_loop();
+
+/**
+ * @brief       INT0 interrupt handler.
+ */
+extern void __on_ready_signal(void) __interrupt INT_INT0;
+
+/**
+ * @brief       INT1 interrupt handler.
+ */
+extern void __on_fan_power_signal(void) __interrupt INT_INT1;
+
+/**
+ * @brief       INT2 interrupt handler.
+ */
+extern void __on_reboot_signal(void) __interrupt INT_INT2;

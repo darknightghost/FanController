@@ -11,3 +11,77 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+#include <power/led.h>
+
+#define PORT_RED   P1_7
+#define PORT_GREEN P5_4
+
+/// LED color.
+static __data status_led_color_t l_color;
+
+/**
+ * @brief       Initialize led.
+ */
+void led_init()
+{
+    // Default red.
+    l_color = STATUS_LED_RED;
+
+    // Port.
+    clear_bit(P1M0, 7);
+    clear_bit(P1M1, 7);
+    clear_bit(P1PU.value, 7);
+    PORT_RED = 0;
+
+    clear_bit(P5M0, 4);
+    clear_bit(P5M1, 4);
+    set_bit(P5PU.value, 4);
+    PORT_GREEN = 1;
+
+    // Enable timer, interval = 1ms.
+    AUXR |= 0x40;
+    TMOD &= 0x0F;
+    TL1 = 0xD0;
+    TH1 = 0x8A;
+    TF1 = 0;
+    ET1 = 1;
+    EA  = 1;
+    TR1 = 1;
+}
+
+/**
+ * @brief       Set the color of status led.
+ */
+void led_set_status_led_color(status_led_color_t color)
+{
+    EA      = 0;
+    l_color = color;
+    EA      = 1;
+}
+
+/**
+ * @brief       Timer 1 interrupt handler.
+ */
+void __on_led_timer(void) __interrupt INT_TIMER1
+{
+    EA = 0;
+    switch (l_color) {
+        case STATUS_LED_RED:
+            PORT_RED   = 0;
+            PORT_GREEN = 1;
+            break;
+
+        case STATUS_LED_GREEN:
+            PORT_RED   = 1;
+            PORT_GREEN = 0;
+            break;
+
+        case STATUS_LED_YELLOW:
+            PORT_RED   = ! PORT_RED;
+            PORT_GREEN = ! PORT_RED;
+            break;
+    }
+    TF1 = 0;
+    EA  = 1;
+}

@@ -13,3 +13,28 @@
 */
 
 #pragma once
+
+/**
+ * @brief       Boot mode.
+ */
+typedef enum _boot_mode {
+    BOOT_MODE_NORMAL  = 0, ///< Boot to normal mode.
+    BOOT_MODE_FACTORY = 1, ///< Boot to factory mode.
+} boot_mode_t;
+
+/**
+ * @brief       Initialize boot mode.
+ */
+void boot_mode_init();
+
+/**
+ * @brief       Set next boot mode to factory mode.
+ */
+void boot_mode_set_next_factory();
+
+/**
+ * @brief       Get next boot mode.
+ *
+ * @return      Boot mode.
+ */
+boot_mode_t boot_mode_get_next();

@@ -37,9 +37,11 @@ FanController/PCB/FanController_backup/*
 
 # CMake
 Firmware/.build/*
+Firmware/build/*
 Firmware/bin/*
 
 # Editor
 tags
 .directory
 *.swp
+.ycm_extra_conf.py

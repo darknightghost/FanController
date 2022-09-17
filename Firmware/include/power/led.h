@@ -13,3 +13,32 @@
 */
 
 #pragma once
+
+#include <common/common.h>
+#include <common/stc8g.h>
+
+/**
+ * @brief       Color of status led.
+ */
+typedef enum _status_led_color {
+    STATUS_LED_RED    = 0, ///< Red.
+    STATUS_LED_GREEN  = 1, ///< Green.
+    STATUS_LED_YELLOW = 2, ///< Yellow.
+} status_led_color_t;
+
+/**
+ * @brief       Initialize led.
+ */
+void led_init();
+
+/**
+ * @brief       Set the color of status led.
+ *
+ * @param[in]   color       Color of the status led.
+ */
+void led_set_status_led_color(status_led_color_t color);
+
+/**
+ * @brief       Timer 1 interrupt handler.
+ */
+extern void __on_led_timer(void) __interrupt INT_TIMER1;
