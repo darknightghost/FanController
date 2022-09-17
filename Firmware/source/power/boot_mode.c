@@ -27,7 +27,11 @@ static __idata boot_mode_t l_next_boot_mode;
 void boot_mode_init()
 {
     l_next_boot_mode = BOOT_MODE_NORMAL;
-    BOOT_MODE_PIN    = 1;
+
+    clear_bit(P3M0, 5);
+    clear_bit(P3M1, 5);
+    set_bit(P3PU.value, 5);
+    BOOT_MODE_PIN = 1;
 }
 
 /**

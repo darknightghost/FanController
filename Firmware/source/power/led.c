@@ -28,6 +28,17 @@ void led_init()
     // Default red.
     l_color = STATUS_LED_RED;
 
+    // Port.
+    clear_bit(P1M0, 7);
+    clear_bit(P1M1, 7);
+    clear_bit(P1PU.value, 7);
+    PIN_RED = 0;
+
+    clear_bit(P5M0, 4);
+    clear_bit(P5M1, 4);
+    set_bit(P5PU.value, 4);
+    PIN_GREEN = 1;
+
     // Enable timer, interval = 1ms.
     AUXR |= 0x40;
     TMOD &= 0x0F;
