@@ -18,6 +18,7 @@
 
 // Definations of STC8Gxx
 #if defined EDITOR_AUTO_COMPLETE
+    #define INT_INT0
     #define INT_TIMER0
     #define INT_INT1
     #define INT_TIMER1
@@ -25,6 +26,7 @@
     #define INT_INT2
 
 #else
+    #define INT_INT0   0
     #define INT_TIMER0 1
     #define INT_INT1   2
     #define INT_TIMER1 3

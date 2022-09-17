@@ -44,4 +44,4 @@ void power_on(power_ctrl_option_t ctrl);
  *
  * @param[in]   ctrl        Control options.
  */
-void power_off(power_ctrl_option_t power);
+void power_off(power_ctrl_option_t ctrl);

@@ -28,6 +28,16 @@ void command_init();
 void command_main_loop();
 
 /**
+ * @brief       INT0 interrupt handler.
+ */
+extern void __on_ready_signal(void) __interrupt INT_INT0;
+
+/**
+ * @brief       INT1 interrupt handler.
+ */
+extern void __on_fan_power_signal(void) __interrupt INT_INT1;
+
+/**
  * @brief       INT2 interrupt handler.
  */
-extern void __on_signal(void) __interrupt INT_INT2;
+extern void __on_reboot_signal(void) __interrupt INT_INT2;

@@ -17,7 +17,7 @@
 
 #include <power/boot_mode.h>
 
-#define BOOT_MODE_PIN P3_5
+#define BOOT_MODE_PORT P3_5
 
 static __idata boot_mode_t l_next_boot_mode;
 
@@ -31,7 +31,7 @@ void boot_mode_init()
     clear_bit(P3M0, 5);
     clear_bit(P3M1, 5);
     set_bit(P3PU.value, 5);
-    BOOT_MODE_PIN = 1;
+    BOOT_MODE_PORT = 1;
 }
 
 /**
@@ -51,7 +51,7 @@ boot_mode_t boot_mode_get_next()
         l_next_boot_mode = BOOT_MODE_NORMAL;
         return BOOT_MODE_FACTORY;
     } else {
-        if (BOOT_MODE_PIN == 0) {
+        if (BOOT_MODE_PORT == 0) {
             return BOOT_MODE_FACTORY;
         } else {
             return BOOT_MODE_NORMAL;

@@ -14,8 +14,8 @@
 
 #include <power/led.h>
 
-#define PIN_RED   P1_7
-#define PIN_GREEN P5_4
+#define PORT_RED   P1_7
+#define PORT_GREEN P5_4
 
 /// LED color.
 static __data status_led_color_t l_color;
@@ -32,12 +32,12 @@ void led_init()
     clear_bit(P1M0, 7);
     clear_bit(P1M1, 7);
     clear_bit(P1PU.value, 7);
-    PIN_RED = 0;
+    PORT_RED = 0;
 
     clear_bit(P5M0, 4);
     clear_bit(P5M1, 4);
     set_bit(P5PU.value, 4);
-    PIN_GREEN = 1;
+    PORT_GREEN = 1;
 
     // Enable timer, interval = 1ms.
     AUXR |= 0x40;
@@ -68,18 +68,18 @@ void __on_led_timer(void) __interrupt INT_TIMER1
     EA = 0;
     switch (l_color) {
         case STATUS_LED_RED:
-            PIN_RED   = 0;
-            PIN_GREEN = 1;
+            PORT_RED   = 0;
+            PORT_GREEN = 1;
             break;
 
         case STATUS_LED_GREEN:
-            PIN_RED   = 1;
-            PIN_GREEN = 0;
+            PORT_RED   = 1;
+            PORT_GREEN = 0;
             break;
 
         case STATUS_LED_YELLOW:
-            PIN_RED   = ! PIN_RED;
-            PIN_GREEN = ! PIN_RED;
+            PORT_RED   = ! PORT_RED;
+            PORT_GREEN = ! PORT_RED;
             break;
     }
     TF1 = 0;

@@ -16,18 +16,21 @@
 
 #include <power/boot_mode.h>
 #include <power/clock.h>
+#include <power/command.h>
 #include <power/led.h>
+#include <power/power.h>
 
 int main()
 {
     // Initialize.
+    power_init();
     led_init();
     clock_init();
     boot_mode_init();
+    command_init();
 
     // Main loop.
-    while (true) {
-    }
+    command_main_loop();
 
     // Reboot.
     IAP_CONTR = 0x60;
