@@ -15,7 +15,7 @@
 #include <power/clock.h>
 
 /// Boot time.
-static __data uint32_t l_milliseconds = 0;
+static __data volatile uint32_t l_milliseconds = 0;
 
 /**
  * @brief       Initialize clock.

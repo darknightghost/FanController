@@ -14,10 +14,23 @@
 
 #include <common/stc8g.h>
 #include <power/command.h>
+#include <power/led.h>
 
 #define PORT_READY         P3_2
 #define PORT_FAN_POWER     P3_3
 #define PORT_REBOOT_SIGNAL P3_6
+
+typedef enum _run_status {
+    RUN_STATUS_READY,
+    RUN_STATUS_POWER_ON,
+    RUN_STATUS_BOOTING,
+    RUN_STATUS_BOOTING_FACTORY,
+    RUN_STATUS_REBOOT_SIGNAL,
+    RUN_STATUS_REBOOTING,
+    RUN_STATUS_REBOOTING_FACTORY,
+} run_status_t;
+
+static __data volatile run_status_t l_run_status;
 
 /**
  * @brief       Initialize command.
@@ -41,7 +54,67 @@ void command_init()
     clear_bit(P3M1, 6);
     set_bit(P3PU.value, 6);
     PORT_REBOOT_SIGNAL = 1;
+
+    l_run_status = RUN_STATUS_POWER_ON;
+
+    EA = 1;
 }
+
+static inline void enable_reboot_int()
+{
+    set_bit(INTCLKO, 4);
+}
+
+static inline void disable_reboot_int()
+{
+    clear_bit(INTCLKO, 4);
+}
+
+static inline void enable_fan_power_int()
+{
+    EX1 = 1;
+}
+
+static inline void disable_fan_power_int()
+{
+    EX1 = 0;
+}
+
+static inline void enable_ready_int()
+{
+    EX0 = 1;
+}
+
+static inline void disable_ready_int()
+{
+    EX0 = 0;
+}
+
+static inline void on_status_ready()
+{
+    EA = 0;
+    led_set_status_led_color(STATUS_LED_GREEN);
+    disable_ready_int();
+    enable_reboot_int();
+    enable_fan_power_int();
+    EA = 1;
+    while (l_run_status == RUN_STATUS_READY) {
+        // Sleep.
+        set_bit(PCON, 1);
+    }
+}
+
+static inline void on_status_power_on() {}
+
+static inline void on_status_booting() {}
+
+static inline void on_status_booting_factory() {}
+
+static inline void on_status_reboot_signal() {}
+
+static inline void on_status_rebooting() {}
+
+static inline void on_status_rebooting_factory() {}
 
 /**
  * @brief       Run main loop.
@@ -49,6 +122,35 @@ void command_init()
 void command_main_loop()
 {
     while (true) {
+        switch (l_run_status) {
+            case RUN_STATUS_READY:
+                on_status_ready();
+                break;
+
+            case RUN_STATUS_POWER_ON:
+                on_status_power_on();
+                break;
+
+            case RUN_STATUS_BOOTING:
+                on_status_booting();
+                break;
+
+            case RUN_STATUS_BOOTING_FACTORY:
+                on_status_booting_factory();
+                break;
+
+            case RUN_STATUS_REBOOT_SIGNAL:
+                on_status_reboot_signal();
+                break;
+
+            case RUN_STATUS_REBOOTING:
+                on_status_rebooting();
+                break;
+
+            case RUN_STATUS_REBOOTING_FACTORY:
+                on_status_rebooting_factory();
+                break;
+        }
     }
 }
 
