@@ -19,6 +19,7 @@
 
 /// LED color.
 static __data status_led_color_t l_color;
+static __data uint8_t            l_green_count;
 
 /**
  * @brief       Initialize led.
@@ -26,7 +27,8 @@ static __data status_led_color_t l_color;
 void led_init()
 {
     // Default red.
-    l_color = STATUS_LED_RED;
+    l_color       = STATUS_LED_RED;
+    l_green_count = 0;
 
     // Port.
     clear_bit(P1M0, 7);
@@ -66,22 +68,33 @@ void led_set_status_led_color(status_led_color_t color)
 void __on_led_timer(void) __interrupt INT_TIMER1
 {
     EA = 0;
+
     switch (l_color) {
-        case STATUS_LED_RED:
+        case STATUS_LED_RED: {
             PORT_RED   = 0;
             PORT_GREEN = 1;
-            break;
+        } break;
 
-        case STATUS_LED_GREEN:
+        case STATUS_LED_GREEN: {
             PORT_RED   = 1;
             PORT_GREEN = 0;
-            break;
+        } break;
 
-        case STATUS_LED_YELLOW:
-            PORT_RED   = ! PORT_RED;
-            PORT_GREEN = ! PORT_RED;
-            break;
+        case STATUS_LED_YELLOW: {
+            if (! PORT_RED) {
+                PORT_RED      = 1;
+                PORT_GREEN    = 0;
+                l_green_count = 0;
+            } else {
+                ++l_green_count;
+                if (l_green_count >= 4) {
+                    PORT_RED   = 0;
+                    PORT_GREEN = 1;
+                }
+            }
+        } break;
     }
+
     TF1 = 0;
     EA  = 1;
 }

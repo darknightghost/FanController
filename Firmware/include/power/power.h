@@ -25,6 +25,8 @@ typedef enum _power_ctrl_option {
     PWR_CTRL_FAN      = 0x10, ///< Fan.
     PWR_CTRL_READY    = PWR_CTRL_MCU | PWR_CTRL_SCREEN | PWR_CTRL_UART
                      | PWR_CTRL_ETHERNET, ///< Without fan.
+    PWR_CTRL_WITHOUT_UART = PWR_CTRL_MCU | PWR_CTRL_SCREEN | PWR_CTRL_ETHERNET
+                            | PWR_CTRL_FAN, ///< Without UART.
     PWR_CTRL_ALL = PWR_CTRL_MCU | PWR_CTRL_SCREEN | PWR_CTRL_UART
                    | PWR_CTRL_ETHERNET | PWR_CTRL_FAN ///< All.
 } power_ctrl_option_t;

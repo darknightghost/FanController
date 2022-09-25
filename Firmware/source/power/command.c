@@ -19,11 +19,11 @@
 #include <power/led.h>
 #include <power/power.h>
 
-#define POWER_MCU_MS    100
-#define POWER_UART_MS   100
-#define POWER_REBOOT_MS 500
+#define POWER_MCU_MS    1000
+#define POWER_UART_MS   5000
+#define POWER_REBOOT_MS 1000
 
-#define REBOOT_FACTORY_MS 50
+#define REBOOT_FACTORY_MS 100
 
 #define PORT_READY         P3_2
 #define PORT_FAN_POWER     P3_3
@@ -168,7 +168,8 @@ static inline void on_status_rebooting()
 static inline void on_status_rebooting_factory()
 {
     // Power off.
-    power_off(PWR_CTRL_ALL);
+    power_off(PWR_CTRL_WITHOUT_UART);
+    power_on(PWR_CTRL_UART);
     led_set_status_led_color(STATUS_LED_RED);
     clock_wait(POWER_REBOOT_MS);
     l_run_status = RUN_STATUS_POWER_ON;
