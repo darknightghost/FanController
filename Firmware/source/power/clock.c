@@ -15,7 +15,7 @@
 #include <power/clock.h>
 
 /// Boot time.
-static __data uint32_t l_milliseconds = 0;
+static __data volatile uint32_t l_milliseconds = 0;
 
 /**
  * @brief       Initialize clock.
@@ -49,6 +49,20 @@ uint32_t clock_get_milliseconds()
     uint32_t ret = l_milliseconds;
     EA           = 1;
     return ret;
+}
+
+/**
+ * @brief       Wait.
+ */
+void clock_wait(uint32_t milliseconds)
+{
+    uint32_t begin = clock_get_milliseconds();
+    for (uint32_t current_time = clock_get_milliseconds();
+         current_time - begin < milliseconds;
+         current_time = clock_get_milliseconds()) {
+        // Sleep uilt interrupted.
+        set_bit(PCON, 0);
+    }
 }
 
 /**
