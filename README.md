@@ -5,4 +5,4 @@ Fan controller of my equipment cabinet.
 | MCU | Frequency |
 | ---- | ---- |
 | Power MCU | 30MHz |
-| Controller MCU | 30Hz |
+| Controller MCU | 45Hz |

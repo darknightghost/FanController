@@ -12,46 +12,37 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <controller/clock.h>
-#include <controller/power.h>
-#include <controller/pwm.h>
+#include <common/common.h>
+#include <common/stc8h.h>
+
 #include <controller/status_led.h>
 
+#define PORT_RED   P5_1
+#define PORT_GREEN P3_5
+
 /**
- * @brief       Initialize MCU.
+ * @brief       Initialize status led.
  */
-inline void mcu_init()
+void status_led_init()
 {
-    status_led_init();
-    clock_init();
-    pwm_init();
-    power_init();
+    // PORT_RED
+    clear_bit(P5M0, 1);
+    clear_bit(P5M1, 1);
+    clear_bit(P5PU.value, 1);
+
+    // PORT_GREEN
+    clear_bit(P3M0, 5);
+    clear_bit(P3M1, 5);
+    clear_bit(P3PU.value, 5);
+
+    PORT_RED = 0;
 }
 
 /**
- * @brief       Initialize peripherals.
+ * @brief       Set ready.
  */
-inline void peripherals_init() {}
-
-int main()
+void status_led_set_ready()
 {
-    // Initialize mcu.
-    mcu_init();
-
-    // Send ready signal.
-    power_send_ready();
-    clock_wait(100000);
-
-    // Initialize peripherals.
-    peripherals_init();
-    status_led_set_ready();
-
-    // Main loop.
-    while (1) {
-        for (uint8_t i = 0; i < 100; ++i) {
-            pwm_set(PWM_TARGET_SCREEN_BTN_LED, i);
-            clock_wait(10000);
-        }
-    }
-    return 0;
+    PORT_RED   = 1;
+    PORT_GREEN = 0;
 }

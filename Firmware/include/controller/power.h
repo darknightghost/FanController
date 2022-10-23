@@ -12,46 +12,34 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <controller/clock.h>
-#include <controller/power.h>
-#include <controller/pwm.h>
-#include <controller/status_led.h>
+#pragma once
+
+#include <common/common.h>
+#include <common/stc8h.h>
 
 /**
- * @brief       Initialize MCU.
+ * @brief       Initialize power control.
  */
-inline void mcu_init()
-{
-    status_led_init();
-    clock_init();
-    pwm_init();
-    power_init();
-}
+void power_init();
 
 /**
- * @brief       Initialize peripherals.
+ * @brief       Send ready signal.
  */
-inline void peripherals_init() {}
+void power_send_ready();
 
-int main()
-{
-    // Initialize mcu.
-    mcu_init();
+/**
+ * @brief       Send reboot signal.
+ */
+void power_send_reboot();
 
-    // Send ready signal.
-    power_send_ready();
-    clock_wait(100000);
+/**
+ * @brief       Send reboot to factory mode signal.
+ */
+void power_send_reboot_factory();
 
-    // Initialize peripherals.
-    peripherals_init();
-    status_led_set_ready();
-
-    // Main loop.
-    while (1) {
-        for (uint8_t i = 0; i < 100; ++i) {
-            pwm_set(PWM_TARGET_SCREEN_BTN_LED, i);
-            clock_wait(10000);
-        }
-    }
-    return 0;
-}
+/**
+ * @brief       Set fan power status.
+ *
+ * @param[in]   on  Status.
+ */
+void power_set_fan_power(bool on);

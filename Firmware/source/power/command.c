@@ -21,7 +21,7 @@
 
 #define POWER_MCU_MS    1000
 #define POWER_UART_MS   1000
-#define POWER_REBOOT_MS 100
+#define POWER_REBOOT_MS 1000
 
 #define REBOOT_FACTORY_MS 50
 
@@ -33,7 +33,7 @@
 #define PORT_RESET         P3_4
 
 typedef enum _run_status {
-    RUN_STATUS_READY,             /// All units ready.
+    RUN_STATUS_READY,             ///< All units ready.
     RUN_STATUS_POWER_ON,          ///< System power on.
     RUN_STATUS_BOOTING,           ///< Normal mode booting.
     RUN_STATUS_BOOTING_FACTORY,   ///< Factory mode booting.
@@ -158,6 +158,7 @@ static inline void on_status_booting()
     led_set_status_led_color(STATUS_LED_YELLOW);
 
     // Power on MCU.
+    power_off(PWR_CTRL_ALL);
     power_on(PWR_CTRL_MCU);
     clock_wait(POWER_MCU_MS);
 
@@ -187,6 +188,7 @@ static inline void on_status_booting_factory()
     led_set_status_led_color(STATUS_LED_YELLOW);
 
     // Power on UART.
+    power_off(PWR_CTRL_WITHOUT_UART);
     power_on(PWR_CTRL_UART);
     clock_wait(POWER_UART_MS);
 
