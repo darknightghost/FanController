@@ -20,14 +20,17 @@
 #include <power/power.h>
 
 #define POWER_MCU_MS    1000
-#define POWER_UART_MS   5000
-#define POWER_REBOOT_MS 1000
+#define POWER_UART_MS   1000
+#define POWER_REBOOT_MS 100
 
-#define REBOOT_FACTORY_MS 100
+#define REBOOT_FACTORY_MS 50
+
+#define RESET_MS 5000
 
 #define PORT_READY         P3_2
 #define PORT_FAN_POWER     P3_3
 #define PORT_REBOOT_SIGNAL P3_6
+#define PORT_RESET         P3_4
 
 typedef enum _run_status {
     RUN_STATUS_READY,             /// All units ready.
@@ -66,15 +69,47 @@ void command_init()
     set_bit(P3PU.value, 6);
     PORT_REBOOT_SIGNAL = 1;
 
+    // PORT_RESET
+    clear_bit(P3M0, 4);
+    clear_bit(P3M1, 4);
+    set_bit(P3PU.value, 4);
+    PORT_RESET = 1;
+
     l_run_status = RUN_STATUS_POWER_ON;
 
     EA = 1;
+}
+
+static inline bool check_reset(bool *pressed_cache, uint32_t *pressed_time)
+{
+    if (*pressed_cache) {
+        if (PORT_RESET == 1) {
+            // Released.
+            *pressed_cache = false;
+        } else {
+            if (clock_get_milliseconds() - *pressed_time >= RESET_MS) {
+                return true;
+            }
+        }
+
+    } else {
+        if (PORT_RESET == 0) {
+            // Pressed.
+            *pressed_time  = clock_get_milliseconds();
+            *pressed_cache = true;
+        }
+    }
+
+    return false;
 }
 
 static inline void on_status_ready()
 {
     led_set_status_led_color(STATUS_LED_GREEN);
     power_on(PWR_CTRL_READY);
+
+    bool     reset_pressed      = false;
+    uint32_t reset_pressed_time = 0;
 
     while (l_run_status == RUN_STATUS_READY) {
         // Check fan status.
@@ -84,9 +119,22 @@ static inline void on_status_ready()
             power_off(PWR_CTRL_FAN);
         }
 
+        // Check reset.
+        if (check_reset(&reset_pressed, &reset_pressed_time)) {
+            boot_mode_t boot_mode = boot_mode_get_next();
+            if (boot_mode == BOOT_MODE_NORMAL) {
+                l_run_status = RUN_STATUS_REBOOTING;
+
+            } else {
+                l_run_status = RUN_STATUS_REBOOTING_FACTORY;
+            }
+            continue;
+        }
+
         // Check reboot signal.
         if (PORT_REBOOT_SIGNAL == 0) {
             l_run_status = RUN_STATUS_REBOOT_SIGNAL;
+            continue;
         }
     }
 }
@@ -114,7 +162,21 @@ static inline void on_status_booting()
     clock_wait(POWER_MCU_MS);
 
     // Wait for ready.
+    bool     reset_pressed      = false;
+    uint32_t reset_pressed_time = 0;
+
     while (PORT_READY != 0) {
+        // Check reset.
+        if (check_reset(&reset_pressed, &reset_pressed_time)) {
+            boot_mode_t boot_mode = boot_mode_get_next();
+            if (boot_mode == BOOT_MODE_NORMAL) {
+                l_run_status = RUN_STATUS_REBOOTING;
+
+            } else {
+                l_run_status = RUN_STATUS_REBOOTING_FACTORY;
+            }
+            return;
+        }
     };
 
     l_run_status = RUN_STATUS_READY;
@@ -133,7 +195,21 @@ static inline void on_status_booting_factory()
     clock_wait(POWER_MCU_MS);
 
     // Wait for ready.
+    bool     reset_pressed      = false;
+    uint32_t reset_pressed_time = 0;
+
     while (PORT_READY != 0) {
+        // Check reset.
+        if (check_reset(&reset_pressed, &reset_pressed_time)) {
+            boot_mode_t boot_mode = boot_mode_get_next();
+            if (boot_mode == BOOT_MODE_NORMAL) {
+                l_run_status = RUN_STATUS_REBOOTING;
+
+            } else {
+                l_run_status = RUN_STATUS_REBOOTING_FACTORY;
+            }
+            return;
+        }
     };
 
     l_run_status = RUN_STATUS_READY;
