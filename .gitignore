@@ -45,3 +45,4 @@ tags
 .directory
 *.swp
 .ycm_extra_conf.py
+PCB\FanController_backup/*
