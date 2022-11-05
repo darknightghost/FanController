@@ -23,11 +23,35 @@
 void serial_init();
 
 /**
- * @brief       Read serial.
+ * @brief       Read UART1 via DMA.
+ *
+ * @param[out]  buffer      Buffer.
+ * @param[in]   size_read   Size to read.
+ * @param[out]  finished    Finished flag.
+ *
+ * @return      \c true if reading started, \c false if busy.
  */
-bool serial_read_byte(uint8_t *byte);
+bool serial_dma_read(uint8_t *      buffer,
+                     uint8_t        size_read,
+                     finish_flag_t *finished);
 
 /**
- * @brief       Write serial.
+ * @brief       Write UART1 via DMA.
+ *
+ * @param[in]   data        Data to write.
+ * @param[in]   size        Data size.
+ * @param[out]  finished    Finished flag.
+ *
+ * @return      \c true if writing started, \c false if busy.
  */
-bool serial_write_byte(uint8_t byte);
+bool serial_dma_write(uint8_t *data, uint8_t size, finish_flag_t *finished);
+
+/**
+ * @brief       UART 1 DMA send interrupt handler.
+ */
+extern void __on_uart_1_dma_send(void) __interrupt INT_DMA_UR1T;
+
+/**
+ * @brief       UART 1 DMA receive interrupt handler.
+ */
+extern void __on_uart_1_dma_recv(void) __interrupt INT_DMA_UR1R;

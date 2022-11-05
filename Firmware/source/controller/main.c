@@ -15,6 +15,7 @@
 #include <controller/clock.h>
 #include <controller/power.h>
 #include <controller/pwm.h>
+#include <controller/serial.h>
 #include <controller/status_led.h>
 
 /**
@@ -26,12 +27,26 @@ inline void mcu_init()
     clock_init();
     pwm_init();
     power_init();
+    serial_init();
 }
 
 /**
  * @brief       Initialize peripherals.
  */
 inline void peripherals_init() {}
+
+/**
+ * @brief       Main loop.
+ */
+inline void main_loop()
+{
+    while (1) {
+        for (uint8_t i = 0; i < 100; ++i) {
+            pwm_set(PWM_TARGET_SCREEN_BTN_LED, i);
+            clock_wait(10000);
+        }
+    }
+}
 
 int main()
 {
@@ -47,11 +62,5 @@ int main()
     status_led_set_ready();
 
     // Main loop.
-    while (1) {
-        for (uint8_t i = 0; i < 100; ++i) {
-            pwm_set(PWM_TARGET_SCREEN_BTN_LED, i);
-            clock_wait(10000);
-        }
-    }
-    return 0;
+    main_loop();
 }

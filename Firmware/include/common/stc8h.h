@@ -23,15 +23,29 @@
     #define INT_INT1
     #define INT_TIMER1
     #define INT_UART1
+    #define INT_SPI
     #define INT_INT2
+    #define INT_TIMER2
+    #define INT_TIMER3
+    #define INT_I2C
+    #define INT_DMA_SPI
+    #define INT_DMA_UR1T
+    #define INT_DMA_UR1R
 
 #else
-    #define INT_INT0   0
-    #define INT_TIMER0 1
-    #define INT_INT1   2
-    #define INT_TIMER1 3
-    #define INT_UART1  4
-    #define INT_INT2   10
+    #define INT_INT0     0
+    #define INT_TIMER0   1
+    #define INT_INT1     2
+    #define INT_TIMER1   3
+    #define INT_UART1    4
+    #define INT_SPI      9
+    #define INT_INT2     10
+    #define INT_TIMER2   12
+    #define INT_TIMER3   19
+    #define INT_I2C      24
+    #define INT_DMA_SPI  49
+    #define INT_DMA_UR1T 50
+    #define INT_DMA_UR1R 51
 
 #endif
 
@@ -165,7 +179,16 @@ __sfr __at(0xCA) P5M0;
 #define P5IE  (*((volatile __xdata register_t *)0xFE35))
 
 // Serial
-__sfr __at(0x98) SCON;
+__sfr  __at(0x98) SCON;
+__sbit __at(0x98) R1;
+__sbit __at(0x99) T1;
+__sbit __at(0x9A) RB8;
+__sbit __at(0x9B) TB8;
+__sbit __at(0x9C) REN;
+__sbit __at(0x9D) SM2;
+__sbit __at(0x9E) SM1;
+__sbit __at(0x9F) SM0_FE;
+
 __sfr __at(0x99) SBUF;
 __sfr __at(0x87) PCON;
 
@@ -223,6 +246,111 @@ __sfr __at(0xF5) IAP_TPS;
 
 // Watch dog.
 __sfr __at(0xC1) WDT_CONTR;
+
+// I2C
+#define I2CCFG   (*((volatile __xdata register_t *)0xFE80))
+#define I2CMSCR  (*((volatile __xdata register_t *)0xFE81))
+#define I2CMSST  (*((volatile __xdata register_t *)0xFE82))
+#define I2CSLCR  (*((volatile __xdata register_t *)0xFE83))
+#define I2CSLST  (*((volatile __xdata register_t *)0xFE84))
+#define I2CSLADR (*((volatile __xdata register_t *)0xFE85))
+#define I2CTXD   (*((volatile __xdata register_t *)0xFE86))
+#define I2CRXD   (*((volatile __xdata register_t *)0xFE87))
+#define I2CMSAUX (*((volatile __xdata register_t *)0xFE88))
+
+// DMA
+#define DMA_M2M_CFG   (*((volatile __xdata register_t *)0xFA00))
+#define DMA_M2M_CR    (*((volatile __xdata register_t *)0xFA01))
+#define DMA_M2M_STA   (*((volatile __xdata register_t *)0xFA02))
+#define DMA_M2M_AMT   (*((volatile __xdata register_t *)0xFA03))
+#define DMA_M2M_DONE  (*((volatile __xdata register_t *)0xFA04))
+#define DMA_M2M_TXAH  (*((volatile __xdata register_t *)0xFA05))
+#define DMA_M2M_TXAL  (*((volatile __xdata register_t *)0xFA06))
+#define DMA_M2M_RXAH  (*((volatile __xdata register_t *)0xFA07))
+#define DMA_M2M_RXAL  (*((volatile __xdata register_t *)0xFA08))
+#define DMA_ADC_CFG   (*((volatile __xdata register_t *)0xFA10))
+#define DMA_ADC_CR    (*((volatile __xdata register_t *)0xFA11))
+#define DMA_ADC_STA   (*((volatile __xdata register_t *)0xFA12))
+#define DMA_ADC_RXAH  (*((volatile __xdata register_t *)0xFA17))
+#define DMA_ADC_RXAL  (*((volatile __xdata register_t *)0xFA18))
+#define DMA_ADC_CFG2  (*((volatile __xdata register_t *)0xFA19))
+#define DMA_ADC_CHSW0 (*((volatile __xdata register_t *)0xFA1A))
+#define DMA_ADC_CHSW1 (*((volatile __xdata register_t *)0xFA1B))
+#define DMA_SPI_CFG   (*((volatile __xdata register_t *)0xFA20))
+#define DMA_SPI_CR    (*((volatile __xdata register_t *)0xFA21))
+#define DMA_SPI_STA   (*((volatile __xdata register_t *)0xFA22))
+#define DMA_SPI_AMT   (*((volatile __xdata register_t *)0xFA23))
+#define DMA_SPI_DONE  (*((volatile __xdata register_t *)0xFA24))
+#define DMA_SPI_TXAH  (*((volatile __xdata register_t *)0xFA25))
+#define DMA_SPI_TXAL  (*((volatile __xdata register_t *)0xFA26))
+#define DMA_SPI_RXAH  (*((volatile __xdata register_t *)0xFA27))
+#define DMA_SPI_RXAL  (*((volatile __xdata register_t *)0xFA28))
+#define DMA_SPI_CFG2  (*((volatile __xdata register_t *)0xFA29))
+#define DMA_UR1T_CFG  (*((volatile __xdata register_t *)0xFA30))
+#define DMA_UR1T_CR   (*((volatile __xdata register_t *)0xFA31))
+#define DMA_UR1T_STA  (*((volatile __xdata register_t *)0xFA32))
+#define DMA_UR1T_AMT  (*((volatile __xdata register_t *)0xFA33))
+#define DMA_UR1T_DONE (*((volatile __xdata register_t *)0xFA34))
+#define DMA_UR1T_TXAH (*((volatile __xdata register_t *)0xFA35))
+#define DMA_UR1T_TXAL (*((volatile __xdata register_t *)0xFA36))
+#define DMA_UR1R_CFG  (*((volatile __xdata register_t *)0xFA38))
+#define DMA_UR1R_CR   (*((volatile __xdata register_t *)0xFA39))
+#define DMA_UR1R_STA  (*((volatile __xdata register_t *)0xFA3A))
+#define DMA_UR1R_AMT  (*((volatile __xdata register_t *)0xFA3B))
+#define DMA_UR1R_DONE (*((volatile __xdata register_t *)0xFA3C))
+#define DMA_UR1R_RXAH (*((volatile __xdata register_t *)0xFA3D))
+#define DMA_UR1R_RXAL (*((volatile __xdata register_t *)0xFA3E))
+#define DMA_UR2T_CFG  (*((volatile __xdata register_t *)0xFA40))
+#define DMA_UR2T_CR   (*((volatile __xdata register_t *)0xFA41))
+#define DMA_UR2T_STA  (*((volatile __xdata register_t *)0xFA42))
+#define DMA_UR2T_AMT  (*((volatile __xdata register_t *)0xFA43))
+#define DMA_UR2T_DONE (*((volatile __xdata register_t *)0xFA44))
+#define DMA_UR2T_TXAH (*((volatile __xdata register_t *)0xFA45))
+#define DMA_UR2T_TXAL (*((volatile __xdata register_t *)0xFA46))
+#define DMA_UR2R_CFG  (*((volatile __xdata register_t *)0xFA48))
+#define DMA_UR2R_CR   (*((volatile __xdata register_t *)0xFA49))
+#define DMA_UR2R_STA  (*((volatile __xdata register_t *)0xFA4A))
+#define DMA_UR2R_AMT  (*((volatile __xdata register_t *)0xFA4B))
+#define DMA_UR2R_DONE (*((volatile __xdata register_t *)0xFA4C))
+#define DMA_UR2R_RXAH (*((volatile __xdata register_t *)0xFA4D))
+#define DMA_UR2R_RXAL (*((volatile __xdata register_t *)0xFA4E))
+#define DMA_UR3T_CFG  (*((volatile __xdata register_t *)0xFA50))
+#define DMA_UR3T_CR   (*((volatile __xdata register_t *)0xFA51))
+#define DMA_UR3T_STA  (*((volatile __xdata register_t *)0xFA52))
+#define DMA_UR3T_AMT  (*((volatile __xdata register_t *)0xFA53))
+#define DMA_UR3T_DONE (*((volatile __xdata register_t *)0xFA54))
+#define DMA_UR3T_TXAH (*((volatile __xdata register_t *)0xFA55))
+#define DMA_UR3T_TXAL (*((volatile __xdata register_t *)0xFA56))
+#define DMA_UR3R_CFG  (*((volatile __xdata register_t *)0xFA58))
+#define DMA_UR3R_CR   (*((volatile __xdata register_t *)0xFA59))
+#define DMA_UR3R_STA  (*((volatile __xdata register_t *)0xFA5A))
+#define DMA_UR3R_AMT  (*((volatile __xdata register_t *)0xFA5B))
+#define DMA_UR3R_DONE (*((volatile __xdata register_t *)0xFA5C))
+#define DMA_UR3R_RXAH (*((volatile __xdata register_t *)0xFA5D))
+#define DMA_UR3R_RXAL (*((volatile __xdata register_t *)0xFA5E))
+#define DMA_UR4T_CFG  (*((volatile __xdata register_t *)0xFA60))
+#define DMA_UR4T_CR   (*((volatile __xdata register_t *)0xFA61))
+#define DMA_UR4T_STA  (*((volatile __xdata register_t *)0xFA62))
+#define DMA_UR4T_AMT  (*((volatile __xdata register_t *)0xFA63))
+#define DMA_UR4T_DONE (*((volatile __xdata register_t *)0xFA64))
+#define DMA_UR4T_TXAH (*((volatile __xdata register_t *)0xFA65))
+#define DMA_UR4T_TXAL (*((volatile __xdata register_t *)0xFA66))
+#define DMA_UR4R_CFG  (*((volatile __xdata register_t *)0xFA68))
+#define DMA_UR4R_CR   (*((volatile __xdata register_t *)0xFA69))
+#define DMA_UR4R_STA  (*((volatile __xdata register_t *)0xFA6A))
+#define DMA_UR4R_AMT  (*((volatile __xdata register_t *)0xFA6B))
+#define DMA_UR4R_DONE (*((volatile __xdata register_t *)0xFA6C))
+#define DMA_UR4R_RXAH (*((volatile __xdata register_t *)0xFA6D))
+#define DMA_UR4R_RXAL (*((volatile __xdata register_t *)0xFA6E))
+#define DMA_LCM_CFG   (*((volatile __xdata register_t *)0xFA70))
+#define DMA_LCM_CR    (*((volatile __xdata register_t *)0xFA71))
+#define DMA_LCM_STA   (*((volatile __xdata register_t *)0xFA72))
+#define DMA_LCM_AMT   (*((volatile __xdata register_t *)0xFA73))
+#define DMA_LCM_DONE  (*((volatile __xdata register_t *)0xFA74))
+#define DMA_LCM_TXAH  (*((volatile __xdata register_t *)0xFA75))
+#define DMA_LCM_TXAL  (*((volatile __xdata register_t *)0xFA76))
+#define DMA_LCM_RXAH  (*((volatile __xdata register_t *)0xFA77))
+#define DMA_LCM_RXAL  (*((volatile __xdata register_t *)0xFA78))
 
 // Generate bit mask.
 #define MASK(type, value) (~((type)(value)))
