@@ -40,11 +40,18 @@ inline void peripherals_init() {}
  */
 inline void main_loop()
 {
+    uint8_t       count = 0;
+    volatile bool finished;
     while (1) {
         for (uint8_t i = 0; i < 100; ++i) {
             pwm_set(PWM_TARGET_SCREEN_BTN_LED, i);
             clock_wait(10000);
         }
+        serial_dma_write(&count, 1, &finished);
+        while (! finished)
+            ;
+
+        ++count;
     }
 }
 
