@@ -40,8 +40,8 @@ inline void peripherals_init() {}
  */
 inline void main_loop()
 {
-    uint8_t       count = 0;
-    volatile bool finished;
+    uint8_t       count    = 0;
+    volatile bool finished = false;
     while (1) {
         for (uint8_t i = 0; i < 100; ++i) {
             pwm_set(PWM_TARGET_SCREEN_BTN_LED, i);

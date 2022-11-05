@@ -58,6 +58,7 @@ bool serial_dma_read(uint8_t *      buffer,
         return false;
     }
     l_reading_finished = finished;
+    *finished          = false;
 
     // Address.
     DMA_UR1R_RXAL.value = (uint8_t)((uint16_t)(buffer)&0xFF);
@@ -83,6 +84,7 @@ bool serial_dma_write(uint8_t *data, uint8_t size, finish_flag_t *finished)
 
     // Write.
     l_writing_finished = finished;
+    *finished          = false;
 
     // Address.
     DMA_UR1T_TXAL.value = (uint8_t)((uint16_t)(data)&0xFF);
