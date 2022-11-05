@@ -51,6 +51,8 @@ void command_init()
 {
     power_off(PWR_CTRL_ALL);
 
+    set_bit(P_SW2, 7);
+
     // PORT_READY
     clear_bit(P3M0, 2);
     clear_bit(P3M1, 2);
@@ -74,6 +76,8 @@ void command_init()
     clear_bit(P3M1, 4);
     set_bit(P3PU.value, 4);
     PORT_RESET = 1;
+
+    clear_bit(P_SW2, 7);
 
     l_run_status = RUN_STATUS_POWER_ON;
 

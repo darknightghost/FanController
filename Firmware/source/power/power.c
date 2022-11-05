@@ -26,6 +26,8 @@
  */
 void power_init()
 {
+    set_bit(P_SW2, 7);
+
     // MCU
     set_bit(P1M0, 0);
     clear_bit(P1M1, 0);
@@ -55,6 +57,8 @@ void power_init()
     clear_bit(P5M1, 5);
     clear_bit(P5PU.value, 5);
     PWR_PORT_FAN = 1;
+
+    clear_bit(P_SW2, 7);
 }
 
 /**

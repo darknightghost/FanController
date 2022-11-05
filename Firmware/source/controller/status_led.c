@@ -25,6 +25,8 @@
  */
 void status_led_init()
 {
+    set_bit(P_SW2, 7);
+
     // PORT_RED
     clear_bit(P5M0, 1);
     clear_bit(P5M1, 1);
@@ -34,6 +36,8 @@ void status_led_init()
     clear_bit(P3M0, 5);
     clear_bit(P3M1, 5);
     clear_bit(P3PU.value, 5);
+
+    clear_bit(P_SW2, 7);
 
     PORT_RED = 0;
 }

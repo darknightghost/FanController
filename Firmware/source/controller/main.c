@@ -38,9 +38,9 @@ inline void peripherals_init() {}
 /**
  * @brief       Main loop.
  */
-inline void main_loop()
+__xdata uint8_t count = 0;
+inline void     main_loop()
 {
-    uint8_t       count    = 0;
     volatile bool finished = false;
     while (1) {
         for (uint8_t i = 0; i < 100; ++i) {
@@ -50,7 +50,6 @@ inline void main_loop()
         serial_dma_write(&count, 1, &finished);
         while (! finished)
             ;
-
         ++count;
     }
 }

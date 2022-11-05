@@ -28,9 +28,14 @@ void boot_mode_init()
 {
     l_next_boot_mode = BOOT_MODE_NORMAL;
 
+    set_bit(P_SW2, 7);
+
     clear_bit(P3M0, 5);
     clear_bit(P3M1, 5);
     set_bit(P3PU.value, 5);
+
+    clear_bit(P_SW2, 7);
+
     BOOT_MODE_PORT = 1;
 }
 

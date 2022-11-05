@@ -49,6 +49,10 @@
 
 #endif
 
+// Mode switch.
+__sfr __at(0xA2) P_SW1;
+__sfr __at(0xBA) P_SW2;
+
 // System clock.
 #define CKSEL    (*((volatile __xdata register_t *)0xFE00))
 #define CLKDIV   (*((volatile __xdata register_t *)0xFE01))

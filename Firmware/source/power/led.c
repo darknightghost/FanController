@@ -30,6 +30,8 @@ void led_init()
     l_color       = STATUS_LED_RED;
     l_green_count = 0;
 
+    set_bit(P_SW2, 7);
+
     // Port.
     clear_bit(P1M0, 7);
     clear_bit(P1M1, 7);
@@ -40,6 +42,8 @@ void led_init()
     clear_bit(P5M1, 4);
     set_bit(P5PU.value, 4);
     PORT_GREEN = 1;
+
+    clear_bit(P_SW2, 7);
 
     // Enable timer, interval = 1ms.
     AUXR |= 0x40;

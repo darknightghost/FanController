@@ -36,15 +36,17 @@ void serial_init()
     ES = 0;
 
     // DMA.
+    set_bit(P_SW2, 7);
     l_writing_finished = NULL;
-    DMA_UR1T_CFG.value = 0x84;
+    DMA_UR1T_CFG.value = 0x80;
     DMA_UR1T_CR.value  = 0x80;
     DMA_UR1T_STA.value = 0;
 
     l_reading_finished = NULL;
-    DMA_UR1R_CFG.value = 0x85;
+    DMA_UR1R_CFG.value = 0x80;
     DMA_UR1R_CR.value  = 0x81;
     DMA_UR1R_STA.value = 0;
+    clear_bit(P_SW2, 7);
 }
 
 /**
@@ -60,15 +62,22 @@ bool serial_dma_read(uint8_t *      buffer,
     l_reading_finished = finished;
     *finished          = false;
 
+    __sbit old_ea = EA;
+    EA            = 0;
+    set_bit(P_SW2, 7);
+
     // Address.
-    DMA_UR1R_RXAL.value = (uint8_t)((uint16_t)(buffer)&0xFF);
-    DMA_UR1R_RXAH.value = (uint8_t)(((uint16_t)(buffer)&0xFF00) >> 8);
+    DMA_UR1R_RXAL.value = (uint8_t)((uint16_t)buffer);
+    DMA_UR1R_RXAH.value = (uint8_t)(((uint16_t)buffer) >> 8);
 
     // Size.
-    DMA_UR1R_AMT.value = size_read;
+    DMA_UR1R_AMT.value = size_read - 1;
 
     // Start.
     DMA_UR1R_CR.value = 0xC0;
+
+    clear_bit(P_SW2, 7);
+    EA = old_ea;
 
     return true;
 }
@@ -86,15 +95,23 @@ bool serial_dma_write(uint8_t *data, uint8_t size, finish_flag_t *finished)
     l_writing_finished = finished;
     *finished          = false;
 
+    __sbit old_ea = EA;
+    EA            = 0;
+    set_bit(P_SW2, 7);
+
     // Address.
-    DMA_UR1T_TXAL.value = (uint8_t)((uint16_t)(data)&0xFF);
-    DMA_UR1T_TXAH.value = (uint8_t)(((uint16_t)(data)&0xFF00) >> 8);
+    DMA_UR1T_TXAL.value = (uint8_t)((uint16_t)data);
+    DMA_UR1T_TXAH.value = (uint8_t)(((uint16_t)data) >> 8);
 
     // Size.
-    DMA_UR1T_AMT.value = size;
+    DMA_UR1T_AMT.value = size - 1;
 
     // Start.
-    DMA_UR1T_CR.value = 0xA1;
+    DMA_UR1T_STA.value = 0x00;
+    DMA_UR1T_CR.value  = 0xC0;
+
+    clear_bit(P_SW2, 7);
+    EA = old_ea;
 
     return true;
 }
@@ -108,7 +125,9 @@ void __on_uart_1_dma_send(void) __interrupt INT_DMA_UR1T
     if (l_writing_finished != NULL) {
         *l_writing_finished = true;
         l_writing_finished  = NULL;
-        DMA_UR1T_STA.value  = 0;
+        set_bit(P_SW2, 7);
+        DMA_UR1T_STA.value = 0;
+        clear_bit(P_SW2, 7);
     }
     EA = 1;
 }
@@ -122,7 +141,9 @@ void __on_uart_1_dma_recv(void) __interrupt INT_DMA_UR1R
     if (l_reading_finished != NULL) {
         *l_reading_finished = true;
         l_reading_finished  = NULL;
-        DMA_UR1R_STA.value  = 0;
+        set_bit(P_SW2, 7);
+        DMA_UR1R_STA.value = 0;
+        clear_bit(P_SW2, 7);
     }
     EA = 1;
 }

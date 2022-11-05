@@ -28,11 +28,15 @@ static __data volatile uint8_t l_screen_btn_led_current = 0;
  */
 void pwm_init()
 {
+    set_bit(P_SW2, 7);
+
     // Ports.
     set_bit(P2M0, 2);
     clear_bit(P2M1, 2);
     clear_bit(P2PU.value, 2);
     PORT_SCREEN_BTN_LED = 1;
+
+    clear_bit(P_SW2, 7);
 
     // Timer1.
     AUXR |= 0x40;

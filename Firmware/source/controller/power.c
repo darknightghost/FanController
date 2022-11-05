@@ -26,6 +26,8 @@
  */
 void power_init()
 {
+    set_bit(P_SW2, 7);
+
     // PORT_READY
     PORT_READY = 1;
     set_bit(P0M0, 6);
@@ -43,6 +45,8 @@ void power_init()
     set_bit(P5M0, 3);
     clear_bit(P5M1, 3);
     clear_bit(P5PU.value, 3);
+
+    clear_bit(P_SW2, 7);
 }
 
 /**
