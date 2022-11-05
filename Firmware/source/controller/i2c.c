@@ -12,5 +12,46 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <common/common.h>
-#include <common/stc8h.h>
+#include <controller/i2c.h>
+
+/**
+ * @brief       Initialize i2c.
+ */
+void i2c_init()
+{
+    set_bit(P_SW2, 7);
+
+    // Select I2C port.
+    // P2.4, P2.5
+    set_bit(P_SW2, 4);
+    clear_bit(P_SW2, 5);
+
+    // Configure I2C port.
+    clear_bit(P2M0, 4);
+    clear_bit(P2M1, 4);
+    set_bit(P2PU.value, 4);
+
+    clear_bit(P2M0, 5);
+    clear_bit(P2M1, 5);
+    set_bit(P2PU.value, 5);
+
+    // Configure I2C.
+
+    clear_bit(P_SW2, 7);
+}
+
+/**
+ * @brief       Read i2c asynchronously.
+ */
+bool i2c_read_async(uint8_t *buffer, uint8_t size_read, finish_flag_t *finished)
+{}
+
+/**
+ * @brief       Write i2c asynchronously.
+ */
+bool i2c_write_async(uint8_t *data, uint8_t size, finish_flag_t *finished) {}
+
+/**
+ * @brief       I2C interrupt handler.
+ */
+void __on_i2c_int(void) __interrupt INT_I2C {}

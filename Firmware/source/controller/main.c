@@ -13,6 +13,7 @@
 */
 
 #include <controller/clock.h>
+#include <controller/i2c.h>
 #include <controller/power.h>
 #include <controller/pwm.h>
 #include <controller/serial.h>
@@ -28,6 +29,7 @@ inline void mcu_init()
     pwm_init();
     power_init();
     serial_init();
+    i2c_init();
 }
 
 /**
