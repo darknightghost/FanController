@@ -61,11 +61,11 @@ typedef union _i2c_operation_stage {
 
 static __idata volatile i2c_operation_t       l_operation;
 static __idata volatile i2c_operation_stage_t l_stage;
-static __idata volatile uint8_t *             l_data_ptrs;
+static uint8_t *                              __idata volatile l_data_ptrs;
 static __idata volatile uint8_t               l_remain_bytes;
 static __idata volatile uint8_t               l_real_bytes;
-static __idata volatile finish_flag_t *       l_finished;
-static __idata volatile finish_flag_t *       l_test_result;
+static __idata volatile pfinish_flag_t        l_finished;
+static __idata volatile pfinish_flag_t        l_test_result;
 
 /**
  * @brief       Initialize i2c.
@@ -114,19 +114,21 @@ bool i2c_test_device_async(uint8_t        address,
 
     __sbit old_ea = EA;
     EA            = 0;
-    set_bit(P_SW2, 7);
 
     // Set status and step.
-    l_operation        = I2C_OP_TEST;
-    l_stage.test_stage = I2C_TEST_STAGE_SEND_ADDR;
-    l_finished         = finished;
-    l_test_result      = exists;
+    l_operation                 = I2C_OP_TEST;
+    l_stage.test_stage          = I2C_TEST_STAGE_SEND_ADDR;
+    l_finished                  = finished;
+    l_test_result               = exists;
+    __idata uint8_t address_reg = address << 1;
+
+    set_bit(P_SW2, 7);
 
     // Clear flags.
     I2CMSST.value = 0;
 
     // Set slave address and write command.
-    I2CTXD.value = address << 1;
+    I2CTXD.value = address_reg;
 
     // Set command.
     I2CMSCR.value = 0x80 | 0x09;
@@ -177,7 +179,7 @@ bool i2c_read_async(uint8_t        address,
                     uint8_t *      buffer,
                     uint8_t        buffer_size,
                     uint8_t *      data_size,
-                    finish_flag_t *finished)
+                    pfinish_flag_t finished)
 {}
 
 /**
@@ -186,7 +188,7 @@ bool i2c_read_async(uint8_t        address,
 bool i2c_write_async(uint8_t        address,
                      uint8_t *      data,
                      uint8_t        size,
-                     finish_flag_t *finished)
+                     pfinish_flag_t finished)
 {}
 
 /**

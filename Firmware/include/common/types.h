@@ -65,4 +65,4 @@ typedef union _register_t {
 #define clear_bit(dest, bit) ((dest) &= (~(((uint8_t)1) << (bit))))
 
 /// Finish flag.
-typedef volatile bool finish_flag_t;
+typedef volatile bool finish_flag_t, *pfinish_flag_t;
