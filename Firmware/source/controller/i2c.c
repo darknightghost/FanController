@@ -104,9 +104,9 @@ void i2c_init()
 /**
  * @brief       Test if the i2c slave device exists asynchronously.
  */
-bool i2c_test_device_async(uint8_t        address,
-                           finish_flag_t *exists,
-                           finish_flag_t *finished)
+bool i2c_test_device_async(__idata uint8_t address,
+                           finish_flag_t * exists,
+                           finish_flag_t * finished)
 {
     if (l_operation != I2C_OP_NONE) {
         return false;
@@ -116,11 +116,10 @@ bool i2c_test_device_async(uint8_t        address,
     EA            = 0;
 
     // Set status and step.
-    l_operation                 = I2C_OP_TEST;
-    l_stage.test_stage          = I2C_TEST_STAGE_SEND_ADDR;
-    l_finished                  = finished;
-    l_test_result               = exists;
-    __idata uint8_t address_reg = address << 1;
+    l_operation        = I2C_OP_TEST;
+    l_stage.test_stage = I2C_TEST_STAGE_SEND_ADDR;
+    l_finished         = finished;
+    l_test_result      = exists;
 
     set_bit(P_SW2, 7);
 
@@ -128,7 +127,7 @@ bool i2c_test_device_async(uint8_t        address,
     I2CMSST.value = 0;
 
     // Set slave address and write command.
-    I2CTXD.value = address_reg;
+    I2CTXD.value = address << 1;
 
     // Set command.
     I2CMSCR.value = 0x80 | 0x09;
@@ -175,20 +174,20 @@ static inline void on_i2c_test_stage_send_stop_finished()
 /**
  * @brief       Read i2c asynchronously.
  */
-bool i2c_read_async(uint8_t        address,
-                    uint8_t *      buffer,
-                    uint8_t        buffer_size,
-                    uint8_t *      data_size,
-                    pfinish_flag_t finished)
+bool i2c_read_async(__idata uint8_t address,
+                    uint8_t *       buffer,
+                    uint8_t         buffer_size,
+                    uint8_t *       data_size,
+                    pfinish_flag_t  finished)
 {}
 
 /**
  * @brief       Write i2c asynchronously.
  */
-bool i2c_write_async(uint8_t        address,
-                     uint8_t *      data,
-                     uint8_t        size,
-                     pfinish_flag_t finished)
+bool i2c_write_async(__idata uint8_t address,
+                     uint8_t *       data,
+                     uint8_t         size,
+                     pfinish_flag_t  finished)
 {}
 
 /**

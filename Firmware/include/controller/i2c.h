@@ -32,9 +32,9 @@ void i2c_init();
  *
  * @return      \c true if reading started, \c false if busy.
  */
-bool i2c_test_device_async(uint8_t        address,
-                           pfinish_flag_t exists,
-                           pfinish_flag_t finished);
+bool i2c_test_device_async(__idata uint8_t address,
+                           pfinish_flag_t  exists,
+                           pfinish_flag_t  finished);
 
 /**
  * @brief       Read i2c asynchronously.
@@ -47,11 +47,11 @@ bool i2c_test_device_async(uint8_t        address,
  *
  * @return      \c true if reading started, \c false if busy.
  */
-bool i2c_read_async(uint8_t        address,
-                    uint8_t *      buffer,
-                    uint8_t        buffer_size,
-                    uint8_t *      data_size,
-                    pfinish_flag_t finished);
+bool i2c_read_async(__idata uint8_t address,
+                    uint8_t *       buffer,
+                    uint8_t         buffer_size,
+                    uint8_t *       data_size,
+                    pfinish_flag_t  finished);
 
 /**
  * @brief       Write i2c asynchronously.
@@ -63,10 +63,10 @@ bool i2c_read_async(uint8_t        address,
  *
  * @return      \c true if writing started, \c false if busy.
  */
-bool i2c_write_async(uint8_t        address,
-                     uint8_t *      data,
-                     uint8_t        size,
-                     pfinish_flag_t finished);
+bool i2c_write_async(__idata uint8_t address,
+                     uint8_t *       data,
+                     uint8_t         size,
+                     pfinish_flag_t  finished);
 
 /**
  * @brief       I2C interrupt handler.

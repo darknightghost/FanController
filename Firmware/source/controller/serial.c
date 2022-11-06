@@ -54,9 +54,9 @@ void serial_init()
 /**
  * @brief       Read UART1 via DMA.
  */
-bool serial_dma_read(uint8_t *      buffer,
-                     uint8_t        size_read,
-                     pfinish_flag_t finished)
+bool serial_dma_read(uint8_t *__idata buffer,
+                     __idata uint8_t  size_read,
+                     pfinish_flag_t   finished)
 {
     if (l_reading_finished != NULL) {
         return false;
@@ -64,19 +64,16 @@ bool serial_dma_read(uint8_t *      buffer,
     l_reading_finished = finished;
     *finished          = false;
 
-    __idata uint8_t  size_reg   = size_read - 1;
-    uint8_t *__idata buffer_ptr = buffer;
-
     __sbit old_ea = EA;
     EA            = 0;
     set_bit(P_SW2, 7);
 
     // Address.
-    DMA_UR1R_RXAL.value = (uint8_t)((uint16_t)buffer_ptr);
-    DMA_UR1R_RXAH.value = (uint8_t)(((uint16_t)buffer_ptr) >> 8);
+    DMA_UR1R_RXAL.value = (uint8_t)((uint16_t)buffer);
+    DMA_UR1R_RXAH.value = (uint8_t)(((uint16_t)buffer) >> 8);
 
     // Size.
-    DMA_UR1R_AMT.value = size_reg;
+    DMA_UR1R_AMT.value = size_read - 1;
 
     // Start.
     DMA_UR1R_CR.value = 0xA1;
@@ -90,7 +87,9 @@ bool serial_dma_read(uint8_t *      buffer,
 /**
  * @brief       Write UART1 via DMA.
  */
-bool serial_dma_write(uint8_t *data, uint8_t size, pfinish_flag_t finished)
+bool serial_dma_write(uint8_t *__idata data,
+                      __idata uint8_t  size,
+                      pfinish_flag_t   finished)
 {
     if (l_writing_finished != NULL) {
         return false;
@@ -100,19 +99,16 @@ bool serial_dma_write(uint8_t *data, uint8_t size, pfinish_flag_t finished)
     l_writing_finished = finished;
     *finished          = false;
 
-    __idata uint8_t  size_reg = size - 1;
-    uint8_t *__idata data_ptr = data;
-
     __sbit old_ea = EA;
     EA            = 0;
     set_bit(P_SW2, 7);
 
     // Address.
-    DMA_UR1T_TXAL.value = (uint8_t)((uint16_t)data_ptr);
-    DMA_UR1T_TXAH.value = (uint8_t)(((uint16_t)data_ptr) >> 8);
+    DMA_UR1T_TXAL.value = (uint8_t)((uint16_t)data);
+    DMA_UR1T_TXAH.value = (uint8_t)(((uint16_t)data) >> 8);
 
     // Size.
-    DMA_UR1T_AMT.value = size_reg;
+    DMA_UR1T_AMT.value = size - 1;
 
     // Start.
     DMA_UR1T_STA.value = 0x00;

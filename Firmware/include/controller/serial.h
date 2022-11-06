@@ -31,9 +31,9 @@ void serial_init();
  *
  * @return      \c true if reading started, \c false if busy.
  */
-bool serial_dma_read(uint8_t *      buffer,
-                     uint8_t        size_read,
-                     pfinish_flag_t finished);
+bool serial_dma_read(uint8_t *__idata buffer,
+                     __idata uint8_t  size_read,
+                     pfinish_flag_t   finished);
 
 /**
  * @brief       Write UART1 via DMA.
@@ -44,7 +44,9 @@ bool serial_dma_read(uint8_t *      buffer,
  *
  * @return      \c true if writing started, \c false if busy.
  */
-bool serial_dma_write(uint8_t *data, uint8_t size, pfinish_flag_t finished);
+bool serial_dma_write(uint8_t *__idata data,
+                      __idata uint8_t  size,
+                      pfinish_flag_t   finished);
 
 /**
  * @brief       UART 1 DMA send interrupt handler.
