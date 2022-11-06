@@ -23,28 +23,50 @@
 void i2c_init();
 
 /**
- * @brief       Read i2c asynchronously.
+ * @brief       Test if the i2c slave device exists asynchronously.
  *
- * @param[out]  buffer      Buffer.
- * @param[in]   size_read   Size to read.
+ * @param[in]   address     Address of the slave device.
+ * @param[out]  exists      \c true if the device exists, \c false if not
+ *                          exists.
  * @param[out]  finished    Finished flag.
  *
  * @return      \c true if reading started, \c false if busy.
  */
-bool i2c_read_async(uint8_t *      buffer,
-                    uint8_t        size_read,
+bool i2c_test_device_async(uint8_t        address,
+                           finish_flag_t *exists,
+                           finish_flag_t *finished);
+
+/**
+ * @brief       Read i2c asynchronously.
+ *
+ * @param[in]   address     Address of the slave device.
+ * @param[out]  buffer      Buffer.
+ * @param[in]   buffer_size Size of buffer.
+ * @param[in]   size        Size of data.
+ * @param[out]  finished    Finished flag.
+ *
+ * @return      \c true if reading started, \c false if busy.
+ */
+bool i2c_read_async(uint8_t        address,
+                    uint8_t *      buffer,
+                    uint8_t        buffer_size,
+                    uint8_t *      data_size,
                     finish_flag_t *finished);
 
 /**
  * @brief       Write i2c asynchronously.
  *
+ * @param[in]   address     Address of the slave device.
  * @param[in]   data        Data to write.
  * @param[in]   size        Data size.
  * @param[out]  finished    Finished flag.
  *
  * @return      \c true if writing started, \c false if busy.
  */
-bool i2c_write_async(uint8_t *data, uint8_t size, finish_flag_t *finished);
+bool i2c_write_async(uint8_t        address,
+                     uint8_t *      data,
+                     uint8_t        size,
+                     finish_flag_t *finished);
 
 /**
  * @brief       I2C interrupt handler.
