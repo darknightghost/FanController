@@ -46,3 +46,4 @@ tags
 *.swp
 .ycm_extra_conf.py
 hardware/FanController_backup/*
+*.log
